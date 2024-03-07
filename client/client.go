@@ -3,6 +3,7 @@ package client
 import (
 	"crypto/tls"
 	"fmt"
+	"google.golang.org/grpc/encoding/gzip"
 	"log"
 	"os"
 	"regexp"
@@ -19,7 +20,6 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/credentials/oauth"
 	xdscreds "google.golang.org/grpc/credentials/xds"
-	"google.golang.org/grpc/encoding/gzip"
 	_ "google.golang.org/grpc/xds"
 )
 
@@ -206,7 +206,9 @@ func NewSubstreamsClient(config *SubstreamsClientConfig) (cli pbsubstreamsrpc.St
 		callOpts = append(callOpts, grpc.PerRPCCredentials(creds))
 	}
 
+	zlog.Info("adding gzip compression")
 	callOpts = append(callOpts, grpc.UseCompressor(gzip.Name))
+	zlog.Info("added gzip compression")
 
 	zlog.Debug("creating new client", zap.String("endpoint", endpoint))
 	cli = pbsubstreamsrpc.NewStreamClient(conn)
