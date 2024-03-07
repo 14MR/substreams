@@ -3,6 +3,7 @@ package client
 import (
 	"crypto/tls"
 	"fmt"
+	"google.golang.org/grpc/encoding/gzip"
 	"log"
 	"os"
 	"regexp"
@@ -231,6 +232,8 @@ func NewSubstreamsClient(config *SubstreamsClientConfig) (cli pbsubstreamsrpc.St
 			headers = map[string]string{ApiKeyHeader: authToken}
 		}
 	}
+
+	callOpts = append(callOpts, grpc.UseCompressor(gzip.Name))
 
 	zlog.Debug("creating new client", zap.String("endpoint", endpoint))
 	cli = pbsubstreamsrpc.NewStreamClient(conn)
